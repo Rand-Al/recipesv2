@@ -1,11 +1,13 @@
 import { create } from "zustand";
 
-export const useRecipes = create((set) => ({
+export const useRecipes = create((set, get) => ({
   recipes: [],
   selectedRecipes: [],
+  currentPage: 5,
   fetch: async () => {
+    const { currentPage } = get();
     const response = await fetch(
-      "https://api.punkapi.com/v2/beers?page=1&per_page=15"
+      `https://api.punkapi.com/v2/beers?page=${currentPage}&per_page=15`
     );
     const data = await response.json();
     set({
@@ -35,6 +37,11 @@ export const useRecipes = create((set) => ({
           return rec;
         }
       }),
+    }));
+  },
+  deleteSelected: () => {
+    set((state) => ({
+      recipes: state.recipes.filter((rec) => rec.isSelected !== true),
     }));
   },
 }));
